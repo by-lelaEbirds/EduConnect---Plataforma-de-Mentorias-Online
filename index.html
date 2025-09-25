@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EduConnect — Conectando Mentes, Acelerando Futuros</title>
+  <meta name="description" content="EduConnect: Encontre mentores experientes, participe de grupos de estudo e impulsione sua jornada de aprendizado." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="preloader">
+    <div class="spinner"></div>
+  </div>
+
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#topo" aria-label="EduConnect">
+        <span class="logo" aria-hidden="true">
+            <img src="assets/logo-educonnect.png" alt="Logo da EduConnect" />
+        </span>
+        <h1>EduConnect</h1>
+      </a>
+
+      <nav>
+        <button id="menuBtn" class="menu-toggle" aria-expanded="false" aria-label="Abrir menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div id="menu" class="menu">
+          <a href="#como-funciona">Como Funciona</a>
+          <a href="#diferenciais">Diferenciais</a>
+          <a href="#plataforma">Plataforma</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contato">Contato</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="topo" class="hero">
+      <div class="container hero-grid">
+        <div class="fade-in">
+          <h2>Conectando mentes, acelerando futuros. A plataforma definitiva para sua <span class="accent-text">jornada de aprendizado</span>.</h2>
+          <p>Encontre mentores experientes, participe de grupos de estudo dinâmicos e tenha acesso a ferramentas exclusivas para impulsionar seu desenvolvimento acadêmico e profissional.</p>
+          <div class="badges">
+            <span class="badge">Mentores Verificados</span>
+            <span class="badge">Grupos de Estudo</span>
+            <span class="badge">Ferramentas Exclusivas</span>
+          </div>
+          <div class="actions">
+            <a class="btn btn-primary" href="#plataforma">Buscar Mentor</a>
+            <button type="button" id="openModalBtnHero" class="btn btn-outline">Cadastre-se</button>
+          </div>
+        </div>
+        <div class="hero-card fade-in">
+          <img src="assets/hero-image.jpg" alt="Ilustração de pessoas conectadas digitalmente em uma mentoria online, mostrando colaboração e tecnologia."/>
+        </div>
+      </div>
+    </section>
+
+    <section id="como-funciona" class="fade-in">
+        <div class="container">
+          <p class="section-kicker">Comece em 3 passos</p>
+          <h2 class="section-title">Simples, rápido e eficiente</h2>
+          <div class="grid-3 mt-24">
+            <article class="card fade-in"><h3>1. Busque e Encontre</h3><p>Use nossos filtros avançados para encontrar o mentor perfeito para suas necessidades, por especialidade, avaliação ou disponibilidade.</p></article>
+            <article class="card fade-in"><h3>2. Agende a Sessão</h3><p>Consulte a agenda do mentor em tempo real e marque sua mentoria com apenas alguns cliques, de forma totalmente online.</p></article>
+            <article class="card fade-in"><h3>3. Conecte-se e Aprenda</h3><p>Participe da sua sessão através da nossa sala virtual integrada, com vídeo, chat e compartilhamento de materiais.</p></article>
+          </div>
+        </div>
+    </section>
+
+    <section id="stats" class="stats-section fade-in">
+        <div class="container">
+            <p class="section-kicker">Nossos Números</p>
+            <h2 class="section-title">Crescimento e Confiança</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" data-target="500">0</span><span>+</span>
+                    <p class="stat-label">Mentores Ativos</p>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="97">0</span><span>%</span>
+                    <p class="stat-label">De Alunos Satisfeitos</p>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="10000">0</span><span>+</span>
+                    <p class="stat-label">Mentorias Realizadas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="diferenciais" class="fade-in">
+      <div class="container">
+        <p class="section-kicker">Por que EduConnect?</p>
+        <h2 class="section-title">O que nos torna únicos</h2>
+        <div class="grid-3 mt-24">
+          <article class="card fade-in"><h3>Mentores Verificados</h3><p>Todos os nossos mentores passam por um rigoroso processo de seleção para garantir a máxima qualidade e experiência.</p></article>
+          <article class="card fade-in"><h3>Grupos de Estudo</h3><p>Crie ou participe de grupos de estudo para colaborar com outros alunos, tirar dúvidas e compartilhar conhecimento.</p></article>
+          <article class="card fade-in"><h3>Plataforma Tudo-em-Um</h3><p>Vídeo, chat, agendamento e compartilhamento de arquivos em um só lugar. Foco total no seu aprendizado, sem distrações.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="plataforma" class="fade-in">
+      <div class="container">
+        <p class="section-kicker">Experiência</p>
+        <h2 class="section-title">Um ambiente projetado para o seu sucesso</h2>
+        <div class="highlights mt-24">
+          <div class="highlight card fade-in">
+            <img src="assets/dashboard.jpg" alt="Print da tela do dashboard do aluno na plataforma EduConnect."/>
+            <h3 class="mt-12">Dashboard Intuitivo</h3>
+            <p class="mt-8">Acompanhe suas próximas mentorias, acesse seus materiais e gerencie seus grupos de estudo em um painel simples e organizado.</p>
+          </div>
+          <div class="highlight card fade-in">
+            <img src="assets/virtual-room.jpg" alt="Print da tela da sala de mentoria virtual com funcionalidades de vídeo e chat."/>
+            <h3 class="mt-12">Sala de Mentoria Virtual</h3>
+            <p class="mt-8">Uma experiência de videochamada otimizada para o aprendizado, com alta qualidade de áudio e vídeo, chat e quadro branco virtual.</p>
+          </div>
+        </div>
+
+        <div class="cta fade-in mt-24">
+          <div>
+            <h3>Pronto para impulsionar sua jornada?</h3>
+            <p>Junte-se a milhares de alunos e mentores que estão transformando a educação.</p>
+            <div class="actions">
+              <button type="button" id="openModalBtnCta" class="btn btn-primary">Criar minha conta</button>
+              <a class="btn btn-outline" href="#">Ver planos</a>
+            </div>
+          </div>
+          <div class="cta-icon" aria-hidden="true">
+              <img src="assets/logo-educonnect.png" alt="Logo da EduConnect" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="fade-in">
+        <div class="container">
+            <p class="section-kicker">Tire suas dúvidas</p>
+            <h2 class="section-title">Perguntas Frequentes</h2>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button class="accordion-header">Como funciona o processo de seleção de mentores?</button>
+                    <div class="accordion-content">
+                        <p>Nosso processo inclui análise curricular, entrevistas e verificação de credenciais. Apenas os profissionais mais qualificados e com experiência comprovada são aprovados para se tornarem mentores na plataforma.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header">Posso cancelar ou reagendar uma mentoria?</button>
+                    <div class="accordion-content">
+                        <p>Sim. Você pode cancelar ou reagendar qualquer sessão com até 24 horas de antecedência diretamente pelo seu painel, sem nenhum custo adicional. As regras específicas podem variar de acordo com o mentor.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-header">Quais são as formas de pagamento aceitas?</button>
+                    <div class="accordion-content">
+                        <p>Aceitamos os principais cartões de crédito (Visa, MasterCard, American Express) e Pix. O pagamento é processado de forma segura através da nossa plataforma.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+  </main>
+
+  <footer id="contato">
+    <div class="container foot-grid">
+      <div>
+        <div class="brand mb-12">
+          <span class="logo" aria-hidden="true">
+            <img src="assets/logo-educonnect.png" alt="Logo da EduConnect" />
+          </span>
+          <h1>EduConnect</h1>
+        </div>
+        <p>Conectando mentes, acelerando futuros.</p>
+        <p>E‑mail: <a href="mailto:contato@educonnect.com">contato@educonnect.com</a></p>
+      </div>
+      <div>
+        <h4 class="mt-0">Navegação</h4>
+        <p><a href="#como-funciona">Como Funciona</a> • <a href="#diferenciais">Diferenciais</a> • <a href="#plataforma">Plataforma</a></p>
+        <p class="note"><a href="#" target="_blank">Instagram</a> • <a href="#" target="_blank">YouTube</a> • <a href="#" target="_blank">LinkedIn</a></p>
+      </div>
+      <div>
+        <h4 class="mt-0">Legal</h4>
+        <p class="note"><a href="#">Termos de Uso</a> • <a href="#">Política de Privacidade</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="mt-0">Crie sua conta gratuita</h3>
+      <p>Comece a sua jornada de aprendizado hoje mesmo. É rápido e fácil.</p>
+      <form id="form-lead" class="form">
+        <input class="input" type="text" placeholder="Seu nome completo" required>
+        <input class="input" type="email" placeholder="Seu melhor e‑mail" required>
+        <button class="btn btn-primary" type="submit">Criar conta</button>
+      </form>
+      <p class="note mt-8">Ao se cadastrar, você concorda com nossos Termos de Uso.</p>
+      <div style="text-align:right; margin-top: 10px;">
+        <button type="button" id="closeModalBtn" class="btn btn-outline">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
