@@ -109,12 +109,8 @@ header {
   display: flex; align-items: center; gap: 0.8rem;
 }
 .logo {
-  width: 50px; height: auto;
-  filter: drop-shadow(0 0 12px rgba(27, 197, 220, 0.7));
-  transition: filter 0.3s ease;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 20px rgba(27, 197, 220, 1));
+  width: 70px; /* TAMANHO DA LOGO AUMENTADO */
+  height: auto;
 }
 .brand h1 {
   font: 800 clamp(1.6rem, 4vw, 2rem) Merriweather, serif;
@@ -163,7 +159,6 @@ main {
 section {
   padding: 60px 0;
 }
-/* Remove padding da primeira e última seção para evitar espaçamento duplo com o gap do main */
 main > section:first-child, main > section:last-child {
   padding-top: 60px;
   padding-bottom: 60px;
@@ -288,12 +283,15 @@ main > section {
 .accordion-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+    transition: max-height 0.4s ease-in-out;
     padding: 0 24px;
 }
 .accordion-content p {
-    margin: 0; padding-bottom: 18px; line-height: 1.6;
+    margin: 0;
+    padding-bottom: 18px; /* Adiciona espaço interno inferior quando aberto */
+    line-height: 1.6;
 }
+
 
 /* ====== STATS ====== */
 .stats-section {
@@ -321,22 +319,6 @@ main > section {
     color: var(--gray-400);
 }
 
-/* ====== DESTAQUES (PLATAFORMA) ====== */
-.highlights {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-}
-.highlight img {
-  border-radius: 20px;
-  width: 100%;
-  aspect-ratio: 16/10;
-  object-fit: cover;
-}
-.highlight h3 {
-  color: var(--navy);
-}
-
 /* ====== CTA ====== */
 .cta {
   background: #07142b; color: #fff; border-radius: 36px;
@@ -358,9 +340,6 @@ main > section {
   border: 1px solid rgba(27, 197, 220, 0.2);
   flex-shrink: 0;
   padding: 15px;
-}
-.cta-icon img {
-    filter: drop-shadow(0 0 8px rgba(27, 197, 220, 0.5));
 }
 
 /* ====== FOOTER ====== */
@@ -440,7 +419,7 @@ footer a:hover {
   .menu a { padding: 10px 0; text-align: center; }
   .menu a::after { display: none; }
   .menu-toggle { display: block; }
-  .hero-grid, .highlights, .foot-grid {
+  .hero-grid, .foot-grid {
     grid-template-columns: 1fr;
   }
   .hero-grid { gap: 32px; }
