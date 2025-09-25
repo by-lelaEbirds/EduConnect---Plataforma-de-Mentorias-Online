@@ -199,18 +199,18 @@
     <div class="modal-content">
       <h3 class="mt-0">Crie sua conta gratuita</h3>
       <p>Comece a sua jornada de aprendizado hoje mesmo. É rápido e fácil.</p>
-      <form id="form-lead" class="form">
-        <input class="input" type="text" placeholder="Seu nome completo" required>
-        <input class="input" type="email" placeholder="Seu melhor e‑mail" required>
+      <form id="form-cadastro" class="form">
+        <input id="nome" class="input" type="text" placeholder="Seu nome completo" required>
+        <input id="email" class="input" type="email" placeholder="Seu melhor e‑mail" required>
+        <input id="senha" class="input" type="password" placeholder="Crie uma senha" required>
         <button class="btn btn-primary" type="submit">Criar conta</button>
       </form>
-      <p class="note mt-8">Ao se cadastrar, você concorda com nossos Termos de Uso.</p>
+      <p id="form-note" class="note mt-8">Ao se cadastrar, você concorda com nossos Termos de Uso.</p>
       <div style="text-align:right; margin-top: 10px;">
         <button type="button" id="closeModalBtn" class="btn btn-outline">Fechar</button>
       </div>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
