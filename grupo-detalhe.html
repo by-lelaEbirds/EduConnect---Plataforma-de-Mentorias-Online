@@ -79,7 +79,7 @@
         const groupDescP = document.getElementById('group-desc-p');
         const messagesList = document.getElementById('messages-list');
         const newMessageForm = document.getElementById('new-message-form');
-
+        
         // --- FUNÇÃO PARA CARREGAR DETALHES E MENSAGENS ---
         const carregarDetalhesDoGrupo = async () => {
             try {
@@ -89,7 +89,7 @@
                 groupNameTitle.innerText = groupData.fields.NomeDoGrupo;
                 groupDescP.innerText = groupData.fields.Descricao;
 
-                // Carrega mensagens do grupo. A fórmula busca o ID do grupo no campo de link "Grupo".
+                // Carrega mensagens do grupo
                 const messagesFilterUrl = `${mensagensUrl}?filterByFormula=SEARCH('${groupId}', ARRAYJOIN({Grupo}))&sort%5B0%5D%5Bfield%5D=Timestamp&sort%5B0%5D%5Bdirection%5D=asc`;
                 const messagesResponse = await fetch(messagesFilterUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
                 const messagesData = await messagesResponse.json();
@@ -99,13 +99,14 @@
                     for (const record of messagesData.records) {
                         const msg = record.fields;
                         
-                        // Busca o nome do usuário que enviou a mensagem
-                        let senderName = 'Usuário';
+                        let senderName = 'Usuário Anônimo';
                         if(msg.EnviadoPor && msg.EnviadoPor[0]) {
-                            const senderUrl = `${usuariosUrl}/${msg.EnviadoPor[0]}`;
-                            const senderResponse = await fetch(senderUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
-                            const senderData = await senderResponse.json();
-                            senderName = senderData.fields.Nome;
+                            try {
+                                const senderUrl = `${usuariosUrl}/${msg.EnviadoPor[0]}`;
+                                const senderResponse = await fetch(senderUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
+                                const senderData = await senderResponse.json();
+                                if(senderData.fields) senderName = senderData.fields.Nome;
+                            } catch (e) { console.error("Erro ao buscar nome do remetente", e); }
                         }
 
                         let anexoHTML = '';
@@ -166,14 +167,18 @@
                     body: JSON.stringify({ records: [newMessageData] })
                 });
 
-                if (!createResponse.ok) throw new Error('Falha ao enviar mensagem.');
+                if (!createResponse.ok) {
+                    // SE HOUVER ERRO, ESTA PARTE TENTARÁ MOSTRAR O MOTIVO
+                    const errorDetails = await createResponse.json();
+                    throw new Error(errorDetails.error.message || 'Falha ao enviar mensagem.');
+                }
                 
                 newMessageForm.reset();
                 carregarDetalhesDoGrupo(); // Recarrega as mensagens
 
             } catch(error) {
                 console.error("Erro ao enviar mensagem:", error);
-                alert("Não foi possível enviar a mensagem.");
+                alert(`Não foi possível enviar a mensagem. Detalhe: ${error.message}`);
             } finally {
                 submitButton.disabled = false;
             }
