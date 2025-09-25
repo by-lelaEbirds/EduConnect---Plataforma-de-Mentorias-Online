@@ -75,20 +75,17 @@
         const newMessageForm = document.getElementById('new-message-form');
         
         const carregarDetalhesDoGrupo = async () => {
-            console.log("Iniciando busca de mensagens para o grupo:", groupId);
             try {
                 const groupResponse = await fetch(gruposUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
                 const groupData = await groupResponse.json();
                 groupNameTitle.innerText = groupData.fields.NomeDoGrupo;
                 groupDescP.innerText = groupData.fields.Descricao;
 
-                const messagesFilterUrl = `${mensagensUrl}?filterByFormula=SEARCH('${groupId}', ARRAYJOIN({Grupo}))&sort%5B0%5D%5Bfield%5D=Timestamp&sort%5B0%5D%5Bdirection%5D=asc`;
-                console.log("URL de busca das mensagens:", messagesFilterUrl);
+                // **** LINHA CORRIGIDA ****
+                const messagesFilterUrl = `${mensagensUrl}?filterByFormula=FIND('${groupId}', {Grupo} & '')&sort%5B0%5D%5Bfield%5D=Timestamp&sort%5B0%5D%5Bdirection%5D=asc`;
                 
                 const messagesResponse = await fetch(messagesFilterUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
                 const messagesData = await messagesResponse.json();
-                
-                console.log("Resposta da API de mensagens:", messagesData);
 
                 messagesList.innerHTML = '';
                 if (messagesData.records && messagesData.records.length > 0) {
@@ -123,7 +120,7 @@
                 messagesList.scrollTop = messagesList.scrollHeight;
             } catch (error) {
                 console.error("Erro CRÍTICO ao carregar detalhes:", error);
-                messagesList.innerHTML = `<p style="color:red;">Ocorreu um erro ao carregar o conteúdo do grupo. Verifique o console (F12) para mais detalhes.</p>`;
+                messagesList.innerHTML = `<p style="color:red;">Ocorreu um erro ao carregar o conteúdo do grupo.</p>`;
             }
         };
 
