@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("loaded");
   };
 
-  // ESTA FUNÇÃO ESTAVA FALTANDO!
   const toggleAuthMode = (e) => {
     if (e) e.preventDefault();
     isLoginMode = !isLoginMode;
@@ -150,9 +149,19 @@ document.addEventListener("DOMContentLoaded", () => {
   modal?.addEventListener("click", (e) => e.target === modal && closeModal());
   document.addEventListener('keydown', (e) => e.key === "Escape" && modal.classList.contains('visible') && closeModal());
 
+  // LÓGICA DO ACORDEÃO (FAQ) CORRIGIDA
   accordionItems.forEach(item => {
-    item.querySelector(".accordion-header").addEventListener("click", () => {
+    const header = item.querySelector(".accordion-header");
+    header.addEventListener("click", () => {
+        const content = item.querySelector(".accordion-content");
         item.classList.toggle('active');
+        if (item.classList.contains('active')) {
+            // Define a altura máxima para a altura real do conteúdo
+            content.style.maxHeight = content.scrollHeight + "px";
+        } else {
+            // Recolhe o item
+            content.style.maxHeight = "0";
+        }
     });
   });
   
