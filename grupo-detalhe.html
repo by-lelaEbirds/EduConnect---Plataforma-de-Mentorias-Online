@@ -11,10 +11,12 @@
     .dashboard-nav { display: flex; justify-content: space-between; align-items: center; }
     .dashboard-main { padding: 60px 0; }
     .chat-container { background: white; border-radius: 20px; padding: 20px; }
-    .message { margin-bottom: 15px; }
+    .messages-list { max-height: 50vh; overflow-y: auto; margin-bottom: 20px; padding-right: 10px; }
+    .message { margin-bottom: 15px; display: flex; flex-direction: column; }
     .message strong { color: var(--navy); }
-    .message p { margin: 5px 0; color: var(--gray-700); }
-    .message img { max-width: 200px; border-radius: 8px; margin-top: 5px; }
+    .message p { margin: 5px 0; color: var(--gray-700); white-space: pre-wrap; }
+    .message .attachment-link { display: inline-block; margin-top: 5px; font-weight: 500;}
+    .message .attachment-image { max-width: 250px; border-radius: 8px; margin-top: 5px; }
   </style>
 </head>
 <body>
@@ -33,11 +35,11 @@
       <p id="group-desc-p" style="text-align: center; max-width: 60ch; margin: 8px auto 40px;"></p>
       
       <div class="chat-container">
-        <div id="messages-list"></div>
+        <div id="messages-list" class="messages-list"><p>Carregando mensagens...</p></div>
         <hr>
         <form id="new-message-form" class="form" style="margin-top: 20px;">
-          <input id="message-text" class="input" type="text" placeholder="Digite sua mensagem...">
-          <input id="message-attachment" class="input" type="text" placeholder="Cole a URL de uma imagem (opcional)">
+          <textarea id="message-text" class="input" placeholder="Digite sua mensagem..." style="border-radius: 20px; font-family: Inter, sans-serif;"></textarea>
+          <input id="message-attachment" class="input" type="text" placeholder="Cole a URL de uma imagem/arquivo (opcional)">
           <button type="submit" class="btn btn-primary">Enviar</button>
         </form>
       </div>
@@ -45,7 +47,141 @@
   </main>
   
   <script>
-    // JS para a página de detalhe do grupo (buscar mensagens, enviar nova mensagem)
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CONFIGURAÇÃO E AUTENTICAÇÃO ---
+        const AIRTABLE_TOKEN = "patoWt1Ghg0KNsoHa.0326957161e00f3a0b7e65188f43d77a2d580ca935774b279c74eb192b6405cf"; 
+        const AIRTABLE_BASE_ID = "appFKKkbMWXMFHjvD";
+
+        const userEmail = localStorage.getItem('educonnect_useremail');
+        if (!userEmail) {
+            window.location.href = 'index.html';
+            return;
+        }
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+
+        // --- PEGAR ID DO GRUPO DA URL ---
+        const params = new URLSearchParams(window.location.search);
+        const groupId = params.get('id');
+        if (!groupId) {
+            alert("ID do grupo não encontrado!");
+            window.location.href = 'grupos.html';
+            return;
+        }
+
+        const gruposUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Grupos/${groupId}`;
+        const mensagensUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Mensagens`;
+        const usuariosUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Usuarios`;
+
+        const groupNameTitle = document.getElementById('group-name-title');
+        const groupDescP = document.getElementById('group-desc-p');
+        const messagesList = document.getElementById('messages-list');
+        const newMessageForm = document.getElementById('new-message-form');
+
+        // --- FUNÇÃO PARA CARREGAR DETALHES E MENSAGENS ---
+        const carregarDetalhesDoGrupo = async () => {
+            try {
+                // Carrega detalhes do grupo
+                const groupResponse = await fetch(gruposUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
+                const groupData = await groupResponse.json();
+                groupNameTitle.innerText = groupData.fields.NomeDoGrupo;
+                groupDescP.innerText = groupData.fields.Descricao;
+
+                // Carrega mensagens do grupo. A fórmula busca o ID do grupo no campo de link "Grupo".
+                const messagesFilterUrl = `${mensagensUrl}?filterByFormula=SEARCH('${groupId}', ARRAYJOIN({Grupo}))&sort%5B0%5D%5Bfield%5D=Timestamp&sort%5B0%5D%5Bdirection%5D=asc`;
+                const messagesResponse = await fetch(messagesFilterUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
+                const messagesData = await messagesResponse.json();
+                
+                messagesList.innerHTML = '';
+                if (messagesData.records && messagesData.records.length > 0) {
+                    for (const record of messagesData.records) {
+                        const msg = record.fields;
+                        
+                        // Busca o nome do usuário que enviou a mensagem
+                        let senderName = 'Usuário';
+                        if(msg.EnviadoPor && msg.EnviadoPor[0]) {
+                            const senderUrl = `${usuariosUrl}/${msg.EnviadoPor[0]}`;
+                            const senderResponse = await fetch(senderUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
+                            const senderData = await senderResponse.json();
+                            senderName = senderData.fields.Nome;
+                        }
+
+                        let anexoHTML = '';
+                        if (msg.Anexo && msg.Anexo.length > 0) {
+                            const anexo = msg.Anexo[0];
+                            if (anexo.type && anexo.type.startsWith('image')) {
+                                anexoHTML = `<a href="${anexo.url}" target="_blank"><img class="attachment-image" src="${anexo.thumbnails.large.url}" alt="Anexo"></a>`;
+                            } else {
+                                anexoHTML = `<a href="${anexo.url}" target="_blank" class="attachment-link">Ver anexo: ${anexo.filename}</a>`;
+                            }
+                        }
+
+                        const messageHTML = `
+                            <div class="message">
+                                <strong>${senderName}</strong>
+                                <p>${msg.Conteudo || ''}</p>
+                                ${anexoHTML}
+                            </div>
+                        `;
+                        messagesList.innerHTML += messageHTML;
+                    }
+                } else {
+                    messagesList.innerHTML = '<p>Nenhuma mensagem neste grupo ainda. Seja o primeiro a enviar!</p>';
+                }
+            } catch (error) {
+                console.error("Erro ao carregar detalhes do grupo:", error);
+                messagesList.innerHTML = "<p>Ocorreu um erro ao carregar o conteúdo do grupo.</p>";
+            }
+        };
+
+        // --- LÓGICA PARA ENVIAR NOVA MENSAGEM ---
+        newMessageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgText = document.getElementById('message-text').value;
+            const msgAttachmentUrl = document.getElementById('message-attachment').value;
+            const submitButton = newMessageForm.querySelector('button');
+            submitButton.disabled = true;
+
+            try {
+                // 1. Encontrar o ID do usuário logado
+                const userFilterUrl = `${usuariosUrl}?filterByFormula=({Email} = '${userEmail}')`;
+                const userResponse = await fetch(userFilterUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
+                const userData = await userResponse.json();
+                const userId = userData.records[0].id;
+
+                // 2. Preparar dados da mensagem
+                const newMessageData = {
+                    fields: { "Conteudo": msgText, "Grupo": [groupId], "EnviadoPor": [userId] }
+                };
+                if (msgAttachmentUrl) {
+                    newMessageData.fields.Anexo = [{ url: msgAttachmentUrl }];
+                }
+
+                // 3. Enviar para o Airtable
+                const createResponse = await fetch(mensagensUrl, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records: [newMessageData] })
+                });
+
+                if (!createResponse.ok) throw new Error('Falha ao enviar mensagem.');
+                
+                newMessageForm.reset();
+                carregarDetalhesDoGrupo(); // Recarrega as mensagens
+
+            } catch(error) {
+                console.error("Erro ao enviar mensagem:", error);
+                alert("Não foi possível enviar a mensagem.");
+            } finally {
+                submitButton.disabled = false;
+            }
+        });
+
+        // --- CARGA INICIAL ---
+        carregarDetalhesDoGrupo();
+    });
   </script>
 </body>
 </html>
