@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   // --- CONFIGURAÇÃO DE SEGREDOS E CONSTANTES ---
   // PREENCHA AS 3 CONSTANTES ABAIXO COM OS SEUS DADOS DO AIRTABLE
-  const AIRTABLE_TOKEN = "SEU_TOKEN_DE_ACESSO_PESSOAL_AQUI"; 
-  const AIRTABLE_BASE_ID = "SEU_BASE_ID_AQUI";
+  const AIRTABLE_TOKEN = "patoWt1Ghg0KNsoHa.0326957161e00f3a0b7e65188f43d77a2d580ca935774b279c74eb192b6405cf"; 
+  const AIRTABLE_BASE_ID = "appFKKkbMWXMFHjvD";
   const AIRTABLE_TABLE_NAME = "Usuarios";
 
   const airtableUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`;
