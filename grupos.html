@@ -10,7 +10,8 @@
     .dashboard-header { background: #07142b; padding: 10px 0; }
     .dashboard-nav { display: flex; justify-content: space-between; align-items: center; }
     .dashboard-main { padding: 60px 0; }
-    .group-card { background: white; color: var(--gray-700); padding: 20px; border-radius: 20px; text-align: left; border: 1px solid #e6e8ee; display: flex; flex-direction: column; }
+    .group-card { background: white; color: var(--gray-700); padding: 20px; border-radius: 20px; text-align: left; border: 1px solid #e6e8ee; display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .group-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
     .group-card h3 { color: var(--navy); margin: 0 0 5px; }
   </style>
 </head>
@@ -26,13 +27,15 @@
       <h2 class="section-title">Grupos de Estudo</h2>
       <p style="text-align: center; max-width: 60ch; margin: 8px auto 40px;">Participe de um grupo existente ou crie o seu e convide seus colegas para colaborar.</p>
       
-      <div id="grupos-lista" class="grid-3" style="margin-bottom: 40px;"></div>
+      <div id="grupos-lista" class="grid-3" style="margin-bottom: 40px;">
+        <p>Carregando grupos...</p>
+      </div>
       
       <div class="card" style="text-align: left; max-width: 700px; margin: auto;">
           <h3>Criar Novo Grupo</h3>
           <form id="create-group-form" class="form">
               <input id="group-name" class="input" type="text" placeholder="Nome do Grupo" required>
-              <textarea id="group-desc" class="input" placeholder="Descrição do grupo" required style="border-radius: 20px;"></textarea>
+              <textarea id="group-desc" class="input" placeholder="Descrição do grupo" required style="border-radius: 20px; font-family: Inter, sans-serif;"></textarea>
               <button type="submit" class="btn btn-primary">Criar Grupo</button>
           </form>
       </div>
@@ -40,7 +43,108 @@
   </main>
   
   <script>
-    // JS para a página de grupos (buscar, listar e criar)
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CONFIGURAÇÃO E AUTENTICAÇÃO ---
+        const AIRTABLE_TOKEN = "patoWt1Ghg0KNsoHa.0326957161e00f3a0b7e65188f43d77a2d580ca935774b279c74eb192b6405cf"; 
+        const AIRTABLE_BASE_ID = "appFKKkbMWXMFHjvD";
+
+        const userEmail = localStorage.getItem('educonnect_useremail');
+        if (!userEmail) {
+            window.location.href = 'index.html'; // Protege a página
+            return;
+        }
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+
+        const gruposUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Grupos`;
+        const usuariosUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Usuarios`;
+        const gruposListaContainer = document.getElementById('grupos-lista');
+        const createGroupForm = document.getElementById('create-group-form');
+
+        // --- FUNÇÃO PARA CARREGAR OS GRUPOS ---
+        const carregarGrupos = () => {
+            gruposListaContainer.innerHTML = '<p>Carregando grupos...</p>';
+            fetch(gruposUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } })
+                .then(response => response.json())
+                .then(data => {
+                    gruposListaContainer.innerHTML = ''; // Limpa o container
+                    if (data.records && data.records.length > 0) {
+                        data.records.forEach(record => {
+                            const grupo = record.fields;
+                            const grupoCard = `
+                                <article class="group-card">
+                                    <h3>${grupo.NomeDoGrupo || 'Grupo sem nome'}</h3>
+                                    <p>${grupo.Descricao || 'Sem descrição.'}</p>
+                                    <a href="grupo-detalhe.html?id=${record.id}" class="btn btn-primary" style="margin-top: 16px;">Entrar no Grupo</a>
+                                </article>
+                            `;
+                            gruposListaContainer.innerHTML += grupoCard;
+                        });
+                    } else {
+                        gruposListaContainer.innerHTML = '<p>Nenhum grupo encontrado. Crie o primeiro!</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error("Erro ao buscar grupos:", error);
+                    gruposListaContainer.innerHTML = "<p>Não foi possível carregar os grupos.</p>";
+                });
+        };
+
+        // --- LÓGICA PARA CRIAR NOVO GRUPO ---
+        createGroupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const groupName = document.getElementById('group-name').value;
+            const groupDesc = document.getElementById('group-desc').value;
+            const submitButton = createGroupForm.querySelector('button');
+            submitButton.disabled = true;
+            submitButton.innerText = 'Criando...';
+
+            try {
+                // 1. Encontrar o ID do usuário logado
+                const userFilterUrl = `${usuariosUrl}?filterByFormula=({Email} = '${userEmail}')`;
+                const userResponse = await fetch(userFilterUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
+                const userData = await userResponse.json();
+                if (!userData.records || userData.records.length === 0) {
+                    throw new Error("Usuário logado não encontrado no Airtable.");
+                }
+                const userId = userData.records[0].id;
+
+                // 2. Criar o novo grupo no Airtable
+                const newGroupData = {
+                    fields: {
+                        "NomeDoGrupo": groupName,
+                        "Descricao": groupDesc,
+                        "Criador": [userId], // Linka o criador
+                        "Membros": [userId]  // Adiciona o criador como primeiro membro
+                    }
+                };
+
+                const createResponse = await fetch(gruposUrl, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records: [newGroupData] })
+                });
+
+                if (!createResponse.ok) throw new Error('Falha ao criar o grupo.');
+                
+                // 3. Sucesso! Limpar formulário e recarregar a lista
+                createGroupForm.reset();
+                carregarGrupos();
+
+            } catch (error) {
+                console.error("Erro ao criar grupo:", error);
+                alert("Não foi possível criar o grupo. Tente novamente.");
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerText = 'Criar Grupo';
+            }
+        });
+
+        // --- CARGA INICIAL ---
+        carregarGrupos();
+    });
   </script>
 </body>
 </html>
