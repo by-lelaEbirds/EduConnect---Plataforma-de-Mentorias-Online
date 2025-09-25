@@ -197,15 +197,21 @@
 
   <div id="modal" class="modal-overlay">
     <div class="modal-content">
-      <h3 class="mt-0">Crie sua conta gratuita</h3>
-      <p>Comece a sua jornada de aprendizado hoje mesmo. É rápido e fácil.</p>
-      <form id="form-cadastro" class="form">
-        <input id="nome" class="input" type="text" placeholder="Seu nome completo" required>
+      <h3 id="modal-title" class="mt-0">Crie sua conta gratuita</h3>
+      <p id="modal-description">Comece a sua jornada de aprendizado hoje mesmo. É rápido e fácil.</p>
+      <form id="auth-form" class="form">
+        <div id="name-field-container">
+            <input id="nome" class="input" type="text" placeholder="Seu nome completo" required>
+        </div>
         <input id="email" class="input" type="email" placeholder="Seu melhor e‑mail" required>
-        <input id="senha" class="input" type="password" placeholder="Crie uma senha" required>
-        <button class="btn btn-primary" type="submit">Criar conta</button>
+        <input id="senha" class="input" type="password" placeholder="Sua senha" required>
+        <button id="auth-form-btn" class="btn btn-primary" type="submit">Criar conta</button>
       </form>
       <p id="form-note" class="note mt-8">Ao se cadastrar, você concorda com nossos Termos de Uso.</p>
+      <p class="note mt-12" style="text-align: center;">
+        <span id="toggle-form-text">Já tem uma conta?</span>
+        <a href="#" id="toggle-form-link" style="color: var(--accent); font-weight: 600;">Faça login</a>
+      </p>
       <div style="text-align:right; margin-top: 10px;">
         <button type="button" id="closeModalBtn" class="btn btn-outline">Fechar</button>
       </div>
