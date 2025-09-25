@@ -11,10 +11,33 @@
     .dashboard-nav { display: flex; justify-content: space-between; align-items: center; }
     .dashboard-main { padding: 60px 0; }
     .chat-container { background: white; border-radius: 20px; padding: 20px; }
-    .messages-list { max-height: 50vh; overflow-y: auto; margin-bottom: 20px; padding-right: 10px; }
-    .message { margin-bottom: 15px; display: flex; flex-direction: column; }
-    .message strong { color: var(--navy); }
-    .message p { margin: 5px 0; color: var(--gray-700); white-space: pre-wrap; }
+    .messages-list { 
+        max-height: 50vh; 
+        overflow-y: auto; 
+        margin-bottom: 20px; 
+        padding: 10px; 
+        display: flex; /* Essencial para o alinhamento */
+        flex-direction: column; /* Essencial para o alinhamento */
+    }
+    .message {
+        padding: 10px 15px;
+        border-radius: 18px;
+        margin-bottom: 10px;
+        max-width: 70%;
+        width: fit-content;
+    }
+    .message.outro {
+        background-color: var(--gray-100);
+        align-self: flex-start; /* Alinha à esquerda */
+        border-bottom-left-radius: 4px;
+    }
+    .message.proprio {
+        background-color: rgba(27, 197, 220, 0.2); /* Fundo azul claro para o usuário */
+        align-self: flex-end; /* Alinha à direita */
+        border-bottom-right-radius: 4px;
+    }
+    .message strong { color: var(--navy); font-size: 0.9rem; }
+    .message p { margin: 5px 0 0; color: var(--gray-700); white-space: pre-wrap; }
     .message .attachment-link { display: inline-block; margin-top: 5px; font-weight: 500;}
     .message .attachment-image { max-width: 250px; border-radius: 8px; margin-top: 5px; }
   </style>
@@ -62,11 +85,9 @@
             window.location.href = 'index.html';
         });
 
-        // --- PEGAR ID DO GRUPO DA URL ---
         const params = new URLSearchParams(window.location.search);
         const groupId = params.get('id');
         if (!groupId) {
-            alert("ID do grupo não encontrado!");
             window.location.href = 'grupos.html';
             return;
         }
@@ -100,14 +121,21 @@
                         const msg = record.fields;
                         
                         let senderName = 'Usuário Anônimo';
+                        let senderEmail = '';
                         if(msg.EnviadoPor && msg.EnviadoPor[0]) {
                             try {
                                 const senderUrl = `${usuariosUrl}/${msg.EnviadoPor[0]}`;
                                 const senderResponse = await fetch(senderUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
                                 const senderData = await senderResponse.json();
-                                if(senderData.fields) senderName = senderData.fields.Nome;
+                                if(senderData.fields) {
+                                  senderName = senderData.fields.Nome;
+                                  senderEmail = senderData.fields.Email;
+                                }
                             } catch (e) { console.error("Erro ao buscar nome do remetente", e); }
                         }
+                        
+                        // **** NOVA LÓGICA DE ESTILO ****
+                        const messageClass = (senderEmail === userEmail) ? 'proprio' : 'outro';
 
                         let anexoHTML = '';
                         if (msg.Anexo && msg.Anexo.length > 0) {
@@ -120,7 +148,7 @@
                         }
 
                         const messageHTML = `
-                            <div class="message">
+                            <div class="message ${messageClass}">
                                 <strong>${senderName}</strong>
                                 <p>${msg.Conteudo || ''}</p>
                                 ${anexoHTML}
@@ -131,9 +159,10 @@
                 } else {
                     messagesList.innerHTML = '<p>Nenhuma mensagem neste grupo ainda. Seja o primeiro a enviar!</p>';
                 }
+                // Rola para a mensagem mais recente
+                messagesList.scrollTop = messagesList.scrollHeight;
             } catch (error) {
                 console.error("Erro ao carregar detalhes do grupo:", error);
-                messagesList.innerHTML = "<p>Ocorreu um erro ao carregar o conteúdo do grupo.</p>";
             }
         };
 
@@ -146,13 +175,11 @@
             submitButton.disabled = true;
 
             try {
-                // 1. Encontrar o ID do usuário logado
                 const userFilterUrl = `${usuariosUrl}?filterByFormula=({Email} = '${userEmail}')`;
                 const userResponse = await fetch(userFilterUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } });
                 const userData = await userResponse.json();
                 const userId = userData.records[0].id;
 
-                // 2. Preparar dados da mensagem
                 const newMessageData = {
                     fields: { "Conteudo": msgText, "Grupo": [groupId], "EnviadoPor": [userId] }
                 };
@@ -160,7 +187,6 @@
                     newMessageData.fields.Anexo = [{ url: msgAttachmentUrl }];
                 }
 
-                // 3. Enviar para o Airtable
                 const createResponse = await fetch(mensagensUrl, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
@@ -168,16 +194,14 @@
                 });
 
                 if (!createResponse.ok) {
-                    // SE HOUVER ERRO, ESTA PARTE TENTARÁ MOSTRAR O MOTIVO
                     const errorDetails = await createResponse.json();
                     throw new Error(errorDetails.error.message || 'Falha ao enviar mensagem.');
                 }
                 
                 newMessageForm.reset();
-                carregarDetalhesDoGrupo(); // Recarrega as mensagens
+                carregarDetalhesDoGrupo(); // Recarrega as mensagens para mostrar a nova
 
             } catch(error) {
-                console.error("Erro ao enviar mensagem:", error);
                 alert(`Não foi possível enviar a mensagem. Detalhe: ${error.message}`);
             } finally {
                 submitButton.disabled = false;
