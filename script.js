@@ -9,62 +9,89 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- ELEMENTOS DO DOM ---
   const preloader = document.getElementById("preloader");
-  const authForm = document.getElementById('auth-form');
+  const menuBtn = document.getElementById("menuBtn");
+  const menu = document.getElementById("menu");
   const modal = document.getElementById("modal");
-  // ... (outros elementos que você já tem)
+  const openModalBtns = document.querySelectorAll("#openModalBtnHero, #openModalBtnCta");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  const accordionItems = document.querySelectorAll(".accordion-item");
+  const fadeInElements = document.querySelectorAll(".fade-in");
+  const authForm = document.getElementById('auth-form');
+  const modalTitle = document.getElementById('modal-title');
+  const modalDescription = document.getElementById('modal-description');
+  const nameFieldContainer = document.getElementById('name-field-container');
+  const nameInput = document.getElementById('nome');
+  const authFormBtn = document.getElementById('auth-form-btn');
+  const formNote = document.getElementById('form-note');
+  const toggleFormText = document.getElementById('toggle-form-text');
+  const toggleFormLink = document.getElementById('toggle-form-link');
 
   // --- FUNÇÕES ---
 
-  // Lógica para alternar o modal entre os modos de Login e Cadastro
+  const handlePreloader = () => {
+    preloader.classList.add("hidden");
+    document.body.classList.add("loaded");
+  };
+
+  // ESTA FUNÇÃO ESTAVA FALTANDO!
   const toggleAuthMode = (e) => {
-    // ... (função toggleAuthMode que você já tem, sem alterações)
+    if (e) e.preventDefault();
+    isLoginMode = !isLoginMode;
+    formNote.innerText = "Ao se cadastrar, você concorda com nossos Termos de Uso.";
+    formNote.style.color = "";
+    authForm.reset();
+
+    if (isLoginMode) {
+      modalTitle.innerText = 'Faça seu login';
+      modalDescription.innerText = 'Que bom te ver de volta!';
+      nameFieldContainer.style.display = 'none';
+      nameInput.required = false;
+      authFormBtn.innerText = 'Entrar';
+      formNote.style.display = 'none';
+      toggleFormText.innerText = 'Não tem uma conta?';
+      toggleFormLink.innerText = 'Cadastre-se';
+    } else {
+      modalTitle.innerText = 'Crie sua conta gratuita';
+      modalDescription.innerText = 'Comece a sua jornada de aprendizado hoje mesmo.';
+      nameFieldContainer.style.display = 'block';
+      nameInput.required = true;
+      authFormBtn.innerText = 'Criar conta';
+      formNote.style.display = 'block';
+      toggleFormText.innerText = 'Já tem uma conta?';
+      toggleFormLink.innerText = 'Faça login';
+    }
   };
   
-  // Função para redirecionar o usuário e salvar seus dados
   const loginSuccess = (userData) => {
-    // Salva os dados do usuário no localStorage para usar na outra página
     localStorage.setItem('educonnect_username', userData.Nome);
     localStorage.setItem('educonnect_useremail', userData.Email);
-
-    // Redireciona o usuário para o dashboard
     window.location.href = 'dashboard.html';
   };
 
-
-  // Lida com o envio do formulário de autenticação (Cadastro E Login)
   const handleAuthSubmit = (e) => {
     e.preventDefault();
     const email = document.getElementById('email').value;
     const senha = document.getElementById('senha').value;
-    const authFormBtn = document.getElementById('auth-form-btn');
-    const formNote = document.getElementById('form-note');
     const originalBtnText = authFormBtn.innerText;
     authFormBtn.disabled = true;
     authFormBtn.innerText = "Verificando...";
     formNote.innerText = "";
     
     if (isLoginMode) {
-      // --- LÓGICA DE LOGIN ---
       const filterUrl = `${airtableUrl}?filterByFormula=({Email} = '${email}')`;
-
-      fetch(filterUrl, {
-        headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` }
-      })
+      fetch(filterUrl, { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } })
       .then(response => response.json())
       .then(data => {
         if (data.records && data.records.length > 0) {
           const user = data.records[0].fields;
           if (user.Senha === senha) {
-            // Senha correta! Login bem-sucedido.
-            formNote.innerText = "Login efetuado com sucesso! Redirecionando...";
+            formNote.innerText = "Login efetuado! Redirecionando...";
             formNote.style.color = "green";
             setTimeout(() => loginSuccess(user), 1000);
           } else {
-            // Senha incorreta
             throw new Error("Senha incorreta.");
           }
         } else {
-          // Usuário não encontrado
           throw new Error("Usuário não encontrado.");
         }
       })
@@ -74,13 +101,9 @@ document.addEventListener("DOMContentLoaded", () => {
         authFormBtn.disabled = false;
         authFormBtn.innerText = originalBtnText;
       });
-
     } else {
-      // --- LÓGICA DE CADASTRO (AIRTABLE) ---
       const nome = document.getElementById('nome').value;
-
       const data = { records: [{ fields: { "Nome": nome, "Email": email, "Senha": senha } }] };
-
       fetch(airtableUrl, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' },
@@ -106,28 +129,20 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   
   // --- INICIALIZAÇÃO E EVENT LISTENERS ---
-  // (Cole aqui toda a parte de inicialização e event listeners do seu script.js anterior)
-  // Exemplo:
-  // window.addEventListener("load", handlePreloader);
-  // menuBtn?.addEventListener("click", ...);
-  // toggleFormLink.addEventListener('click', toggleAuthMode);
-  // authForm.addEventListener('submit', handleAuthSubmit);
-  // etc.
+  window.addEventListener("load", handlePreloader);
 
-  // Para garantir, aqui está a seção de inicialização completa novamente:
-  const menuBtn = document.getElementById("menuBtn");
-  const menu = document.getElementById("menu");
-  const toggleFormLink = document.getElementById('toggle-form-link');
-
-  window.addEventListener("load", () => preloader.classList.add("hidden"));
-
-  menuBtn?.addEventListener("click", () => menu.classList.toggle("open"));
-  menu?.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => menu.classList.remove('open'));
+  menuBtn?.addEventListener("click", () => {
+    menu.classList.toggle("open");
+    menuBtn.classList.toggle("open");
   });
 
-  const openModalBtns = document.querySelectorAll("#openModalBtnHero, #openModalBtnCta");
-  const closeModalBtn = document.getElementById("closeModalBtn");
+  menu?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      menu.classList.remove('open');
+      menuBtn.classList.remove('open');
+    });
+  });
+
   const openModal = () => modal.classList.add("visible");
   const closeModal = () => modal.classList.remove("visible");
   openModalBtns.forEach(btn => btn.addEventListener("click", openModal));
@@ -135,14 +150,12 @@ document.addEventListener("DOMContentLoaded", () => {
   modal?.addEventListener("click", (e) => e.target === modal && closeModal());
   document.addEventListener('keydown', (e) => e.key === "Escape" && modal.classList.contains('visible') && closeModal());
 
-  const accordionItems = document.querySelectorAll(".accordion-item");
   accordionItems.forEach(item => {
     item.querySelector(".accordion-header").addEventListener("click", () => {
         item.classList.toggle('active');
     });
   });
   
-  const fadeInElements = document.querySelectorAll(".fade-in");
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
