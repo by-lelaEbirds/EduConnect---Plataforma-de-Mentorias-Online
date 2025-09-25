@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-utf-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard — EduConnect</title>
   <meta name="description" content="Sua área pessoal na plataforma EduConnect." />
@@ -9,10 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css">
   <style>
-    /* Estilos adicionais específicos para o dashboard */
-    body { opacity: 1; } /* Remove o fade-in do body aqui */
+    body { opacity: 1; }
     .dashboard-header {
         background: #07142b;
         padding: 10px 0;
@@ -31,9 +30,9 @@
 
   <header class="dashboard-header">
     <div class="container dashboard-nav">
-      <a class="brand" href="index.html" aria-label="EduConnect">
+      <a class="brand" href="./index.html" aria-label="EduConnect">
         <span class="logo" aria-hidden="true">
-            <img src="assets/logo-educonnect.png" alt="Logo da EduConnect" />
+            <img src="./logo-educonnect.png" alt="Logo da EduConnect" />
         </span>
         <h1>EduConnect</h1>
       </a>
@@ -68,23 +67,18 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Pega o nome do usuário que salvamos no localStorage
         const userName = localStorage.getItem('educonnect_username');
         const userNameElement = document.getElementById('user-name');
 
         if (userName && userNameElement) {
-            // Se o nome existir, exibe na tela
             userNameElement.innerText = userName;
         }
 
-        // Lógica de Logout
         const logoutBtn = document.getElementById('logout-btn');
         logoutBtn.addEventListener('click', () => {
-            // Limpa os dados do localStorage
             localStorage.removeItem('educonnect_username');
             localStorage.removeItem('educonnect_useremail');
-            // Redireciona de volta para a página inicial
-            window.location.href = 'index.html';
+            window.location.href = './index.html';
         });
     });
   </script>
