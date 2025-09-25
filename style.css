@@ -202,6 +202,7 @@ main > section {
   background-image: radial-gradient(80% 120% at 50% 0%, rgba(27, 197, 220, 0.18), transparent 60%);
   background-color: var(--navy); color: var(--white);
   padding: 80px 0; position: relative; overflow: hidden;
+  text-align: center; /* Centraliza o conteúdo do hero */
 }
 .hero::before {
     content: '';
@@ -211,8 +212,14 @@ main > section {
     z-index: 2;
 }
 .hero-grid {
-  display: grid; grid-template-columns: 1.2fr 0.8fr;
-  gap: 48px; align-items: center; position: relative; z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr; /* MUDANÇA: Apenas uma coluna */
+  gap: 48px; 
+  align-items: center; 
+  position: relative; 
+  z-index: 3;
+  max-width: 80ch; /* Limita a largura do texto para melhor leitura */
+  margin: auto;
 }
 .hero h2 {
   font: 900 clamp(28px, 5vw, 46px) Merriweather, serif; margin: 0 0 12px;
@@ -222,6 +229,7 @@ main > section {
 }
 .badges {
   display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 18px 0 26px;
+  justify-content: center; /* MUDANÇA: Centraliza os badges */
 }
 .badge {
   border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 999px;
@@ -229,13 +237,7 @@ main > section {
 }
 .actions {
   display: flex; flex-wrap: wrap; gap: 12px;
-}
-.hero-card {
-  background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 18px; border-radius: 28px;
-}
-.hero-card img {
-  border-radius: 20px;
+  justify-content: center; /* MUDANÇA: Centraliza os botões */
 }
 
 /* ====== ACCORDION (PARA FAQ) ====== */
@@ -288,14 +290,14 @@ main > section {
 }
 .accordion-content p {
     margin: 0;
-    padding-bottom: 18px; /* Adiciona espaço interno inferior quando aberto */
+    padding-bottom: 18px; 
     line-height: 1.6;
 }
 
 
 /* ====== STATS ====== */
 .stats-section {
-    background: #07142b; /* Um tom ligeiramente diferente para contraste */
+    background: #07142b;
 }
 .stats-grid {
     display: grid;
